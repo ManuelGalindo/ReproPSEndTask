@@ -1,0 +1,27 @@
+jobs:
+  - job: HelloWorld
+    strategy:
+      maxParallel: 2
+      matrix:
+        Linux:
+          vmImage: ubuntu-latest
+        Windows:
+          vmImage: windows-latest
+    pool:
+      vmImage: $(vmImage)
+    steps:
+      - powershell: |
+          dotnet build
+          $info = Start-Process dotnet `
+                                -ArgumentList (Resolve-Path "bin\Debug\netcoreapp3.0\HelloWorld.dll") `
+                                -NoNewWindow `
+                                -PassThru
+          Write-host "Setting PID to $($info.Id)"
+          Write-Host ('##vso[task.setvariable variable=pid]' + $info.Id)
+        timeoutInMinutes: 1
+      - powershell: |
+          Write-Host 'Running application should exist under the PID of $(pid).'
+          Get-Process -Id $(pid)
+          if (-Not $?) {
+            exit 1
+          }
