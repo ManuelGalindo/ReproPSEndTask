@@ -16,6 +16,7 @@ jobs:
                                 -ArgumentList (Resolve-Path "bin\Debug\netcoreapp3.0\HelloWorld.dll") `
                                 -NoNewWindow `
                                 -PassThru
+                                -Wait
           Write-host "Setting PID to $($info.Id)"
           Write-Host ('##vso[task.setvariable variable=pid]' + $info.Id)
         timeoutInMinutes: 1
